@@ -1,0 +1,323 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rueda de la vida</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#0D1B1F; --surface:#16292D; --surface-2:#1F3B41;
+    --fg:#F2E7D8; --muted:#B1CAD1; --line:#2B4349;
+    --deep:#7FB4BC; --accent:#D47E45; --below:#E0905A; --yellow:#EDAA56;
+    --shadow:0 1px 2px rgba(0,0,0,.35), 0 12px 32px rgba(0,0,0,.45);
+    --font-display:"Libre Baskerville", Georgia, serif;
+    --font-body:"Open Sans", -apple-system, system-ui, sans-serif;
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  img{max-width:100%}
+  [hidden]{display:none!important}
+  body{background:var(--bg);color:var(--fg);font-family:var(--font-body);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:720px;margin:0 auto;padding:clamp(40px,8vw,88px) clamp(22px,5vw,44px)}
+  h1,h2,h3{font-family:var(--font-display);font-weight:400;margin:0;text-wrap:balance;letter-spacing:-.01em}
+  .eyebrow{font-size:.72rem;text-transform:uppercase;letter-spacing:.16em;color:var(--deep);font-weight:700;margin:0 0 .8rem}
+  button,input{font-family:inherit}
+  .hl{color:var(--yellow);font-style:italic}
+  .divide{width:48px;height:2px;background:var(--line);border:0;border-radius:2px;margin:0 auto 2.4rem}
+  .btn{display:inline-block;text-align:center;background:#9FCAD1;color:var(--bg);border:none;border-radius:999px;padding:.9rem 1.7rem;font-size:1rem;font-weight:700;box-shadow:var(--shadow);cursor:pointer;text-decoration:none;transition:transform .12s ease}
+  .btn:hover{transform:translateY(-1px)}
+  .btn:focus-visible{outline:3px solid var(--deep);outline-offset:2px}
+
+  /* intro */
+  .intro{text-align:center}
+  .intro h1{font-size:clamp(2.2rem,8vw,3.4rem);line-height:1.04;margin-bottom:1rem}
+  .intro p{color:var(--fg);font-size:1.08rem;margin:0 auto 2.2rem;max-width:58ch}
+  .intro strong{color:var(--fg)}
+  .intro .meta{font-size:.85rem;color:var(--muted);margin-top:1.6rem}
+
+  /* quiz */
+  #quiz{width:100%}
+  .top{display:flex;align-items:center;gap:.8rem;margin-bottom:2.2rem}
+  .bar{flex:1;height:6px;background:var(--surface-2);border-radius:99px;overflow:hidden}
+  .bar>i{display:block;height:100%;width:0;background:var(--yellow);border-radius:99px;transition:width .35s ease}
+  .count{font-size:.8rem;color:var(--muted);font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .q .area{text-align:center;color:var(--deep);text-transform:uppercase;letter-spacing:.16em;font-size:.72rem;font-weight:700;margin-bottom:.7rem}
+  .q h2{font-size:clamp(1.3rem,4vw,1.7rem);line-height:1.22;margin-bottom:1.8rem;text-align:center}
+  .opts{display:flex;flex-direction:column;gap:.75rem}
+  .opt{text-align:left;background:var(--surface);border:0;border-radius:14px;padding:1rem 1.15rem;font-size:1rem;color:var(--fg);cursor:pointer;box-shadow:var(--shadow);transition:transform .1s,outline-color .12s;outline:2px solid transparent}
+  .opt:hover{transform:translateY(-1px);outline-color:var(--deep)}
+  .opt:focus-visible{outline:3px solid var(--deep);outline-offset:2px}
+  .back{margin-top:1.4rem;background:none;border:none;color:var(--muted);font-size:.9rem;font-weight:600;padding:0;cursor:pointer}
+  .back:disabled{opacity:.35;cursor:default}
+
+  /* result */
+  .res .eyebrow{text-align:center}
+  .radar-wrap{max-width:460px;margin:0 auto 1.2rem}
+  .radar-wrap svg{width:100%;height:auto;display:block;overflow:visible}
+  .summary{text-align:center;color:var(--fg);font-size:1.08rem;max-width:52ch;margin:0 auto 2.6rem}
+  .summary strong{color:var(--fg)}
+  .section-break{font-size:clamp(2.4rem,9vw,3.8rem);font-weight:400;line-height:1.12;color:var(--fg);text-align:center;margin:1rem 0 0;padding-bottom:1.4rem}
+  .sub{text-align:center;color:var(--muted);max-width:46ch;margin:0 auto 2.4rem}
+  .card{background:var(--surface);border-radius:16px;padding:1.6rem 1.7rem;box-shadow:var(--shadow);margin-bottom:1.4rem}
+  .card .ch{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;margin-bottom:.3rem}
+  .card .ch h3{font-size:1.4rem;color:var(--fg)}
+  .card .ch .sc{font-family:var(--font-display);color:var(--yellow);font-size:1.3rem;white-space:nowrap}
+  .card .lead{color:var(--muted);margin:.1rem 0 1rem}
+  .card .hlabel{color:var(--deep);font-size:.9rem;margin:0 0 .5rem}
+  .card ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  .card li{position:relative;padding-left:1.4rem;color:var(--fg)}
+  .card li::before{content:"";position:absolute;left:.2rem;top:.65rem;width:7px;height:7px;border-radius:50%;background:var(--yellow)}
+  .closer{text-align:center;color:var(--fg);font-size:1.15rem;max-width:44ch;margin:1.4rem auto 0}
+  .pdfbtn{display:block;margin:2.2rem auto 0}
+  .restart{display:block;margin:1.4rem auto 0;background:none;border:none;color:var(--muted);font-weight:600;font-size:.9rem;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <section id="intro" class="intro">
+    <p class="eyebrow">Rueda de la vida</p>
+    <h1>¿Cómo está girando tu <span class="hl">vida?</span></h1>
+    <p>La vida solo mejora cuando sabes qué mejorar. En las próximas preguntas revisas con honestidad las 7 áreas de tu vida, ves cuáles están plenas y cuáles tienen oportunidad, y te llevas <strong>hábitos pequeños</strong> para empezar a moverlas.</p>
+    <button class="btn" id="start">Empezar</button>
+    <p class="meta">Son 21 preguntas (3 por área). Tarda ~3 minutos. Sé honesto, es solo para ti.</p>
+  </section>
+
+  <section id="quiz" hidden>
+    <div class="top">
+      <div class="bar"><i id="fill"></i></div>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="q">
+      <p class="area" id="qarea"></p>
+      <h2 id="qtext"></h2>
+      <div class="opts" id="opts"></div>
+      <button class="back" id="back">← Atrás</button>
+    </div>
+  </section>
+
+  <section id="result" hidden class="res">
+    <p class="eyebrow">Tu rueda de la vida</p>
+    <div class="radar-wrap" id="radar"></div>
+    <p class="summary" id="summary"></p>
+
+    <hr class="divide">
+
+    <h2 class="section-break">¿Por dónde <span class="hl">empezar?</span></h2>
+    <p class="sub">Elige 1 o 2 hábitos pequeños y comprométete de verdad. Con eso basta para empezar a mover tu rueda — no te llenes de metas que no vas a sostener.</p>
+    <div id="habitcards"></div>
+
+    <p class="closer">Cuando quieras, repite la rueda cada cierto tiempo y mira cómo se va llenando.</p>
+    <button class="btn pdfbtn" id="pdfBtn">Descargar mi rueda en PDF</button>
+    <button class="restart" id="restart">Volver a empezar</button>
+  </section>
+
+</div>
+
+<script>
+  const AREAS = [
+    { key:"abundancia",     name:"Abundancia",      short:"Abundancia",
+      lead:"La abundancia se construye con decisiones pequeñas y constantes, no con un golpe de suerte.",
+      habits:["Revisa tus números 10 minutos cada domingo: cuánto entró, cuánto salió y una decisión para la semana.","Apenas te llegue dinero, aparta un porcentaje fijo para ti, aunque sea pequeño."] },
+    { key:"hobbies",        name:"Hobbies y Disfrute", short:"Hobbies",
+      lead:"El disfrute no es un premio por producir: es parte de una vida plena.",
+      habits:["Agenda un bloque fijo a la semana solo para algo que disfrutes y protégelo como una cita.","Haz una lista de 5 cosas que te daban alegría y recupera una esta semana."] },
+    { key:"relaciones",     name:"Relaciones",      short:"Relaciones",
+      lead:"Nadie llega a los 80 deseando haber trabajado más y querido menos.",
+      habits:["Hoy mándale un mensaje genuino a alguien que quieres, sin motivo.","Agenda un plan presencial a la semana y vívelo sin celular."] },
+    { key:"profesion",      name:"Profesión",       short:"Profesión",
+      lead:"Tu profesión florece cuando hay dirección y foco, no solo horas.",
+      habits:["Cada mañana define la tarea #1 que mueve la aguja y hazla antes que nada.","Bloquea 90 minutos sin distracciones para trabajo profundo, 3 veces por semana."] },
+    { key:"crecimiento",    name:"Crecimiento Personal", short:"Crecimiento",
+      lead:"Crecer un poco cada día te convierte en quien puede lograr lo que quiere.",
+      habits:["Dedica 10 minutos al día a aprender algo que quieras mejorar y aplica una sola idea.","Cada noche escribe una línea: qué aprendí hoy."] },
+    { key:"fisico",         name:"Físico y Salud",  short:"Físico y Salud",
+      lead:"Tu cuerpo es la base: cuando tiene energía, todo lo demás rinde.",
+      habits:["Mueve tu cuerpo 20 minutos, 3 veces por semana. Empieza pequeño y sé constante.","Fija una hora para dormir y respétala al menos 5 noches."] },
+    { key:"espiritualidad", name:"Espiritualidad y Felicidad", short:"Espiritualidad",
+      lead:"Tu paz interior es el suelo donde crece todo lo demás.",
+      habits:["Dedica 5 minutos al despertar a meditar o escribir, antes de tocar el celular.","Sal a la naturaleza una vez por semana, sin pantallas."] }
+  ];
+
+  // 3 preguntas por área (claridad · acción/constancia · satisfacción). Opciones de 0 a 3 puntos.
+  const QUESTIONS = [
+    // Abundancia
+    { area:"abundancia", q:"Cuando piensas en tu dinero y tu abundancia…", a:[
+      ["Sé con claridad qué quiero y para qué",3],["Tengo una idea, pero difusa",2],["Casi no lo pienso, voy reaccionando",1],["Me genera ansiedad y lo evito",0] ]},
+    { area:"abundancia", q:"En el último mes, con tus finanzas…", a:[
+      ["Tomé acciones concretas y sostenidas",3],["Hice algo, pero sin constancia",2],["Buenas intenciones, poca acción",1],["Nada, siguió igual",0] ]},
+    { area:"abundancia", q:"Hoy, tu relación con el dinero se siente…", a:[
+      ["En fluidez, tranquila y en crecimiento",3],["Estable, con cosas por mejorar",2],["Inestable, me preocupa seguido",1],["Pesada, es una fuente de estrés",0] ]},
+    // Hobbies
+    { area:"hobbies", q:"Sobre tu tiempo para disfrutar y tus hobbies…", a:[
+      ["Sé qué me llena y lo priorizo",3],["Sé qué me gusta, pero no le doy espacio",2],["No tengo claro qué disfruto hoy",1],["Siento que perdí el juego",0] ]},
+    { area:"hobbies", q:"En las últimas semanas, tiempo para ti y para jugar…", a:[
+      ["Lo tuve con regularidad",3],["Un par de veces, sin constancia",2],["Muy poco, siempre lo dejo de último",1],["Nada, vivo en modo producir",0] ]},
+    { area:"hobbies", q:"Cuando haces algo solo por placer, te sientes…", a:[
+      ["Pleno y presente, sin culpa",3],["Bien, aunque a veces con culpa",2],["Incómodo, siento que pierdo el tiempo",1],["Casi no recuerdo la última vez",0] ]},
+    // Relaciones
+    { area:"relaciones", q:"Sobre las relaciones que te importan (amigos, familia, pareja)…", a:[
+      ["Tengo claro a quién quiero cuidar y cómo",3],["Sé quiénes importan, pero no soy intencional",2],["Voy en automático con la gente",1],["Me siento desconectado o solo",0] ]},
+    { area:"relaciones", q:"En el último mes, cultivar esos vínculos…", a:[
+      ["Les dediqué tiempo real y presente",3],["Algo, pero siempre corriendo",2],["Muy poco, el tiempo se fue en otras cosas",1],["Casi nada",0] ]},
+    { area:"relaciones", q:"Tus relaciones hoy se sienten…", a:[
+      ["Nutritivas y recíprocas",3],["Bien, con algunas por atender",2],["Tensas o distantes",1],["Vacías o conflictivas",0] ]},
+    // Profesión
+    { area:"profesion", q:"Sobre tu profesión o tu trabajo…", a:[
+      ["Sé qué quiero construir y para qué",3],["Tengo rumbo, pero algo borroso",2],["Voy haciendo sin dirección clara",1],["Me siento perdido o atrapado",0] ]},
+    { area:"profesion", q:"En el último mes, hacia tus metas profesionales…", a:[
+      ["Avancé con acciones concretas y constantes",3],["Avancé a ratos",2],["Más ocupado que productivo",1],["Estancado",0] ]},
+    { area:"profesion", q:"Tu profesión hoy se siente…", a:[
+      ["Con propósito y en crecimiento",3],["Estable, aunque con techo",2],["Pesada o sin mucho sentido",1],["Agotadora, me drena",0] ]},
+    // Crecimiento
+    { area:"crecimiento", q:"Sobre tu crecimiento personal…", a:[
+      ["Sé en qué quiero crecer y por qué",3],["Quiero crecer, pero sin foco claro",2],["No me lo planteo muy seguido",1],["Siento que estoy igual hace rato",0] ]},
+    { area:"crecimiento", q:"En el último mes, en tu desarrollo…", a:[
+      ["Aprendí y practiqué algo con constancia",3],["Algo suelto, sin ritmo",2],["Consumí contenido pero sin aplicarlo",1],["Nada",0] ]},
+    { area:"crecimiento", q:"Hoy, tu evolución personal se siente…", a:[
+      ["Viva, me sorprendo creciendo",3],["Lenta pero presente",2],["Estancada",1],["En retroceso",0] ]},
+    // Físico y Salud
+    { area:"fisico", q:"Sobre tu cuerpo y tu salud…", a:[
+      ["Sé qué necesito y qué quiero lograr",3],["Tengo idea, pero no un plan",2],["Lo pienso solo cuando algo falla",1],["Lo tengo abandonado",0] ]},
+    { area:"fisico", q:"En el último mes, moverte, comer y descansar bien…", a:[
+      ["Fue parte constante de mi rutina",3],["A ratos, sin constancia",2],["Muy poco",1],["Nada, mi cuerpo quedó de último",0] ]},
+    { area:"fisico", q:"Tu energía y tu salud hoy se sienten…", a:[
+      ["Con vitalidad, me siento bien",3],["Aceptables, con cosas por mejorar",2],["Bajas, me canso fácil",1],["Mal, me preocupa",0] ]},
+    // Espiritualidad
+    { area:"espiritualidad", q:"Sobre tu conexión interior y tu felicidad…", a:[
+      ["Sé qué me conecta y lo cultivo",3],["Sé qué me hace bien, pero no lo priorizo",2],["Lo tengo algo olvidado",1],["Me siento desconectado de mí",0] ]},
+    { area:"espiritualidad", q:"En el último mes, prácticas que te centran (meditar, escribir, naturaleza, fe)…", a:[
+      ["Las sostuve con regularidad",3],["Algunas veces",2],["Casi nunca",1],["Nada",0] ]},
+    { area:"espiritualidad", q:"Por dentro, la mayor parte del tiempo te sientes…", a:[
+      ["En paz y con sentido",3],["Bien, con altibajos",2],["Inquieto o vacío seguido",1],["Perdido o apagado",0] ]}
+  ];
+
+  const $ = id => document.getElementById(id);
+  const areaByKey = k => AREAS.find(a=>a.key===k);
+  let i = 0, answers = [];
+
+  $("start").onclick = () => { $("intro").hidden=true; $("quiz").hidden=false; render(); };
+  $("back").onclick = () => { if(i>0){ i--; answers.pop(); render(); } };
+  $("restart").onclick = () => { i=0; answers=[]; $("result").hidden=true; $("intro").hidden=false; window.scrollTo(0,0); };
+
+  function render(){
+    const Q = QUESTIONS[i];
+    $("count").textContent = (i+1)+" / "+QUESTIONS.length;
+    $("fill").style.width = (i/QUESTIONS.length*100)+"%";
+    $("qarea").textContent = areaByKey(Q.area).name;
+    $("qtext").textContent = Q.q;
+    $("back").disabled = i===0;
+    const box = $("opts"); box.innerHTML="";
+    Q.a.forEach(([text,pts]) => {
+      const b=document.createElement("button");
+      b.className="opt"; b.type="button"; b.textContent=text;
+      b.onclick = () => { answers[i]={area:Q.area,pts:pts}; i++; (i<QUESTIONS.length)?render():showResult(); };
+      box.appendChild(b);
+    });
+    window.scrollTo(0,0);
+  }
+
+  function scores(){
+    const raw={}, cnt={};
+    AREAS.forEach(a=>{raw[a.key]=0;cnt[a.key]=0;});
+    answers.forEach(x=>{ raw[x.area]+=x.pts; cnt[x.area]+=1; });
+    const out={};
+    AREAS.forEach(a=>{ const max=cnt[a.key]*3||1; out[a.key]=Math.round(raw[a.key]/max*10); });
+    return out;
+  }
+
+  // ---- Radar (SVG, sin librerías) ----
+  function renderRadar(sc){
+    const cx=230, cy=205, R=125, n=AREAS.length;
+    const ang=i2=>(-90 + i2*360/n)*Math.PI/180;
+    const pt=(i2,r)=>[ (cx+r*Math.cos(ang(i2))), (cy+r*Math.sin(ang(i2))) ];
+    const poly=r=> AREAS.map((a,i2)=>{const p=pt(i2,typeof r==="function"?r(i2):r);return p[0].toFixed(1)+","+p[1].toFixed(1);}).join(" ");
+    let svg='<svg viewBox="0 0 460 420" role="img" aria-label="Rueda de la vida">';
+    // rings
+    [2,4,6,8,10].forEach(lv=>{ svg+='<polygon points="'+poly(R*lv/10)+'" fill="none" stroke="'+(lv===10?"#38545b":"#24404699")+'" stroke-width="1"/>'; });
+    // axes
+    AREAS.forEach((a,i2)=>{ const p=pt(i2,R); svg+='<line x1="'+cx+'" y1="'+cy+'" x2="'+p[0].toFixed(1)+'" y2="'+p[1].toFixed(1)+'" stroke="#24404699" stroke-width="1"/>'; });
+    // data polygon
+    svg+='<polygon points="'+poly(i2=>R*sc[AREAS[i2].key]/10)+'" fill="rgba(237,170,86,.22)" stroke="#EDAA56" stroke-width="2.5" stroke-linejoin="round"/>';
+    // dots + labels
+    AREAS.forEach((a,i2)=>{
+      const d=pt(i2,R*sc[a.key]/10);
+      svg+='<circle cx="'+d[0].toFixed(1)+'" cy="'+d[1].toFixed(1)+'" r="4" fill="#EDAA56"/>';
+      const lp=pt(i2,R+20), c=Math.cos(ang(i2));
+      let anchor="middle"; if(c>0.25)anchor="start"; else if(c<-0.25)anchor="end";
+      const lx=lp[0].toFixed(1), ly=lp[1];
+      svg+='<text x="'+lx+'" y="'+(ly-2).toFixed(1)+'" text-anchor="'+anchor+'" fill="#F2E7D8" font-family="Open Sans,sans-serif" font-size="12">'+a.short+'</text>';
+      svg+='<text x="'+lx+'" y="'+(ly+13).toFixed(1)+'" text-anchor="'+anchor+'" fill="#EDAA56" font-family="Libre Baskerville,serif" font-size="12">'+sc[a.key]+'/10</text>';
+    });
+    svg+='</svg>';
+    $("radar").innerHTML=svg;
+  }
+
+  function showResult(){
+    $("fill").style.width="100%";
+    const sc=scores();
+    renderRadar(sc);
+    const sorted=AREAS.slice().sort((a,b)=>sc[a.key]-sc[b.key]);
+    const strong=sorted[sorted.length-1], focus=sorted[0];
+    $("summary").innerHTML="Tu área más plena hoy es <strong>"+strong.name+"</strong> ("+sc[strong.key]+"/10). Donde tienes más oportunidad de crecer es <strong>"+focus.name+"</strong> ("+sc[focus.key]+"/10) — y justo ahí empiezan tus hábitos de abajo.";
+    // Tarjetas: las 3 áreas con menor puntaje
+    const lowest=sorted.slice(0,3);
+    $("habitcards").innerHTML = lowest.map(a=>{
+      return '<div class="card">'
+        + '<div class="ch"><h3>'+a.name+'</h3><span class="sc">'+sc[a.key]+'/10</span></div>'
+        + '<p class="lead">'+a.lead+'</p>'
+        + '<p class="hlabel">Hábitos pequeños para moverla</p>'
+        + '<ul>'+a.habits.map(h=>'<li>'+h+'</li>').join("")+'</ul>'
+        + '</div>';
+    }).join("");
+    $("quiz").hidden=true; $("result").hidden=false;
+    window.scrollTo(0,0);
+  }
+
+  // Descargar resultados en PDF (un clic → archivo)
+  async function downloadPDF(filename, btn){
+    if(!(window.jspdf && window.html2canvas)){ alert("No se pudo cargar el generador de PDF. Revisa tu conexión e inténtalo de nuevo."); return; }
+    const el=document.querySelector(".wrap");
+    const hideEls=document.querySelectorAll(".pdfbtn,.restart");
+    const label=btn?btn.textContent:"";
+    if(btn){ btn.textContent="Generando PDF…"; btn.disabled=true; }
+    hideEls.forEach(x=>x.style.display="none");
+    try{ if(document.fonts && document.fonts.ready){ await document.fonts.ready; } }catch(e){}
+    try{
+      const canvas=await html2canvas(el,{backgroundColor:"#0D1B1F",scale:2,useCORS:true});
+      const img=canvas.toDataURL("image/png");
+      const { jsPDF }=window.jspdf;
+      const pdf=new jsPDF("p","pt","a4");
+      const pw=pdf.internal.pageSize.getWidth(), ph=pdf.internal.pageSize.getHeight();
+      const ih=canvas.height*(pw/canvas.width);
+      let heightLeft=ih, pos=0;
+      pdf.setFillColor(13,27,31); pdf.rect(0,0,pw,ph,"F");
+      pdf.addImage(img,"PNG",0,0,pw,ih,"","FAST");
+      heightLeft-=ph;
+      while(heightLeft>0){ pos-=ph; pdf.addPage(); pdf.setFillColor(13,27,31); pdf.rect(0,0,pw,ph,"F"); pdf.addImage(img,"PNG",0,pos,pw,ih,"","FAST"); heightLeft-=ph; }
+      pdf.save(filename);
+    }catch(e){ alert("Hubo un problema generando el PDF. Inténtalo de nuevo."); }
+    hideEls.forEach(x=>x.style.display="");
+    if(btn){ btn.textContent=label; btn.disabled=false; }
+  }
+  $("pdfBtn").onclick=function(){ downloadPDF("mi-rueda-de-la-vida.pdf", this); };
+
+  // Auto-ajuste de altura cuando está embebido (evita scroll dentro de scroll)
+  function postHeight(){
+    try{ parent.postMessage({type:"ruedaVidaHeight", height: Math.ceil(document.documentElement.scrollHeight)}, "*"); }catch(e){}
+  }
+  if(window.ResizeObserver){ new ResizeObserver(postHeight).observe(document.body); }
+  window.addEventListener("load", function(){ postHeight(); setTimeout(postHeight,350); });
+  window.addEventListener("resize", postHeight);
+</script>
+</body>
+</html>
+
+</body></html>
