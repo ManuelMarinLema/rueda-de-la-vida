@@ -1,4 +1,3 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!doctype html>
 <html lang="es">
 <head>
@@ -64,7 +63,21 @@
   .summary{text-align:center;color:var(--fg);font-size:1.08rem;max-width:52ch;margin:0 auto 2.6rem}
   .summary strong{color:var(--fg)}
   .section-break{font-size:clamp(2.4rem,9vw,3.8rem);font-weight:400;line-height:1.12;color:var(--fg);text-align:center;margin:1rem 0 0;padding-bottom:1.4rem}
-  .sub{text-align:center;color:var(--muted);max-width:46ch;margin:0 auto 2.4rem}
+  .sub{text-align:center;color:var(--muted);max-width:48ch;margin:0 auto 2.4rem}
+  #s1title{margin-top:0}
+  .s1intro{text-align:center;color:var(--fg);font-size:1.08rem;max-width:54ch;margin:0 auto 1.8rem}
+  .s1intro strong{color:var(--fg)}
+  .toparea{max-width:52ch;margin:0 auto 1.3rem;text-align:center}
+  .toparea .tn{font-family:var(--font-display);font-size:1.3rem;color:var(--fg)}
+  .toparea .ts{font-family:var(--font-display);color:var(--yellow);margin-left:.45rem}
+  .toparea .tw{color:var(--muted);margin:.25rem 0 0}
+  .offercard{border:1px solid rgba(237,170,86,.4)}
+  .offer-tag{color:var(--yellow);font-style:italic;font-family:var(--font-display);font-size:1.1rem;margin:0 0 .6rem}
+  .offer-why{color:var(--muted);font-size:.92rem;margin:0 0 .7rem}
+  .card strong{color:var(--fg)}
+  .offer-price{color:var(--muted);font-size:.9rem;margin:.9rem 0 0}
+  .offercard .btn{margin-top:1.2rem}
+  .allgood{text-align:center;color:var(--muted);max-width:44ch;margin:0 auto}
   .card{background:var(--surface);border-radius:16px;padding:1.6rem 1.7rem;box-shadow:var(--shadow);margin-bottom:1.4rem}
   .card .ch{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;margin-bottom:.3rem}
   .card .ch h3{font-size:1.4rem;color:var(--fg)}
@@ -104,15 +117,22 @@
   </section>
 
   <section id="result" hidden class="res">
-    <p class="eyebrow">Tu rueda de la vida</p>
+    <h2 class="section-break" id="s1title">¿Cómo está tu vida <span class="hl">ahora?</span></h2>
     <div class="radar-wrap" id="radar"></div>
-    <p class="summary" id="summary"></p>
+    <p class="s1intro" id="s1intro"></p>
+    <div id="topareas"></div>
 
     <hr class="divide">
 
-    <h2 class="section-break">¿Por dónde <span class="hl">empezar?</span></h2>
-    <p class="sub">Elige 1 o 2 hábitos pequeños y comprométete de verdad. Con eso basta para empezar a mover tu rueda — no te llenes de metas que no vas a sostener.</p>
+    <h2 class="section-break">¿Qué puedes hacer <span class="hl">hoy mismo?</span></h2>
+    <p class="sub">Ideas de hábitos pequeños y sostenibles para las áreas que más lo piden. Elige 1 o 2 y comprométete de verdad. Un consejo: ponle una alarma recurrente, así no dependes de acordarte.</p>
     <div id="habitcards"></div>
+
+    <hr class="divide">
+
+    <h2 class="section-break">¿Cuál es el <span class="hl">paso siguiente?</span></h2>
+    <p class="sub" id="offerIntro"></p>
+    <div id="offers"></div>
 
     <p class="closer">Cuando quieras, repite la rueda cada cierto tiempo y mira cómo se va llenando.</p>
     <button class="btn pdfbtn" id="pdfBtn">Descargar mi rueda en PDF</button>
@@ -131,7 +151,7 @@
       habits:["Agenda un bloque fijo a la semana solo para algo que disfrutes y protégelo como una cita.","Haz una lista de 5 cosas que te daban alegría y recupera una esta semana."] },
     { key:"relaciones",     name:"Relaciones",      short:"Relaciones",
       lead:"Nadie llega a los 80 deseando haber trabajado más y querido menos.",
-      habits:["Hoy mándale un mensaje genuino a alguien que quieres, sin motivo.","Agenda un plan presencial a la semana y vívelo sin celular."] },
+      habits:["Cada semana llama a un familiar o amigo que quieras — elige un día fijo y hazlo recurrente.","Agenda un plan presencial a la semana y vívelo sin celular."] },
     { key:"profesion",      name:"Profesión",       short:"Profesión",
       lead:"Tu profesión florece cuando hay dirección y foco, no solo horas.",
       habits:["Cada mañana define la tarea #1 que mueve la aguja y hazla antes que nada.","Bloquea 90 minutos sin distracciones para trabajo profundo, 3 veces por semana."] },
@@ -199,6 +219,16 @@
       ["En paz y con sentido",3],["Bien, con altibajos",2],["Inquieto o vacío seguido",1],["Perdido o apagado",0] ]}
   ];
 
+  const LOW_MAX = 6; // "bajito" = 6 o menos
+  const OFFERS = {
+    dta:{ name:"Desbloquea tu abundancia", url:"https://www.manuelmarin.co/workshop-dta", price:"17 USD · acceso inmediato a la grabación",
+      blurb:"3 horas para <strong>dejar de perseguir el dinero y empezar a vivir desde la abundancia</strong>. Entiendes por qué se bloquea tu flujo y te llevas herramientas prácticas para atraerla desde otra energía.", cta:"Ver el taller" },
+    reiki:{ name:"Sesión de Reiki", url:"https://www.manuelmarin.co/reiki", price:"Sesión 1 a 1 · presencial o virtual",
+      blurb:"Una terapia uno a uno para <strong>bajar el estrés, recuperar la claridad y reconectar con tu poder interior</strong>. Trabajamos la causa, no solo los síntomas.", cta:"Agendar una sesión" },
+    amar:{ name:"Entrenamiento (A)mar Adentro", url:"https://www.manuelmarin.co/amar-adentro", price:"24 sesiones en vivo · acompañamiento por 6 meses",
+      blurb:"Tu ventaja injusta es <strong>conocerte tanto que el éxito sea inevitable</strong>. 24 sesiones en vivo para <strong>convertir tu autenticidad en tu mayor fortaleza</strong>: claridad sobre tu ventaja única, herramientas para gestionar el miedo sin quemarte y el impulso para dar el primer paso real.", cta:"Agendar mi llamada gratis" }
+  };
+
   const $ = id => document.getElementById(id);
   const areaByKey = k => AREAS.find(a=>a.key===k);
   let i = 0, answers = [];
@@ -264,19 +294,66 @@
     $("fill").style.width="100%";
     const sc=scores();
     renderRadar(sc);
+    const low = k => sc[k] <= LOW_MAX;
+    const lowNames = keys => keys.filter(low).map(k=>areaByKey(k).name).join(", ");
     const sorted=AREAS.slice().sort((a,b)=>sc[a.key]-sc[b.key]);
-    const strong=sorted[sorted.length-1], focus=sorted[0];
-    $("summary").innerHTML="Tu área más plena hoy es <strong>"+strong.name+"</strong> ("+sc[strong.key]+"/10). Donde tienes más oportunidad de crecer es <strong>"+focus.name+"</strong> ("+sc[focus.key]+"/10) — y justo ahí empiezan tus hábitos de abajo.";
-    // Tarjetas: las 3 áreas con menor puntaje
-    const lowest=sorted.slice(0,3);
-    $("habitcards").innerHTML = lowest.map(a=>{
-      return '<div class="card">'
-        + '<div class="ch"><h3>'+a.name+'</h3><span class="sc">'+sc[a.key]+'/10</span></div>'
-        + '<p class="lead">'+a.lead+'</p>'
-        + '<p class="hlabel">Hábitos pequeños para moverla</p>'
-        + '<ul>'+a.habits.map(h=>'<li>'+h+'</li>').join("")+'</ul>'
+    const strong=sorted[sorted.length-1];
+
+    // ---- Sección 1: ¿Cómo está tu vida ahora? ----
+    $("s1intro").innerHTML="Tu área más plena hoy es <strong>"+strong.name+"</strong> ("+sc[strong.key]+"/10). Y estas son las 3 que más piden tu atención:";
+    const top3=sorted.slice(0,3);
+    $("topareas").innerHTML=top3.map(a=>'<div class="toparea"><span class="tn">'+a.name+'</span><span class="ts">'+sc[a.key]+'/10</span><p class="tw">'+a.lead+'</p></div>').join("");
+
+    // ---- Sección 2: ¿Cuál es el paso siguiente? (ruteo de ofertas) ----
+    const triggered=[];
+    if(low("abundancia")) triggered.push("dta");
+    if(["profesion","crecimiento","abundancia","espiritualidad"].some(low)) triggered.push("amar");
+    if(["relaciones","fisico"].some(low)) triggered.push("reiki");
+    let order=["dta","reiki","amar"].filter(k=>triggered.indexOf(k)>-1); // económica → profunda
+    let aspirational=false;
+    if(order.length===0){ order=["amar"]; aspirational=true; }
+    if(aspirational){ $("offerIntro").textContent="Tu rueda está bastante equilibrada, vas muy bien. Si quieres llevarla a otro nivel, este es el camino:"; }
+    else if(order.length>1){ $("offerIntro").textContent="Lo de arriba lo puedes empezar hoy, por tu cuenta. Si quieres un cambio más profundo y acompañado, este es tu siguiente paso — te lo ordeno de lo más sencillo a lo más profundo."; }
+    else { $("offerIntro").textContent="Lo de arriba lo puedes empezar hoy. Si quieres ir más profundo y acompañado, este es tu siguiente paso:"; }
+    $("offers").innerHTML=order.map((k,idx)=>{
+      const o=OFFERS[k];
+      let tag="";
+      if(!aspirational && order.length>1){
+        if(idx===0) tag="Si apenas estás comenzando, empieza por aquí";
+        else if(k==="amar") tag="Si quieres un cambio real y más profundo";
+      }
+      let why="";
+      if(!aspirational){
+        if(k==="dta") why="Porque tu abundancia está pidiendo atención.";
+        else if(k==="reiki") why="Porque hay áreas que te piden bajar el ruido y reconectar: "+lowNames(["relaciones","fisico"])+".";
+        else if(k==="amar") why="Porque varias de tus áreas se transforman desde la raíz — tu energía y tu autenticidad: "+lowNames(["profesion","crecimiento","abundancia","espiritualidad"])+".";
+      }
+      return '<div class="card offercard">'
+        + (tag?'<p class="offer-tag">'+tag+'</p>':'')
+        + '<div class="ch"><h3>'+o.name+'</h3></div>'
+        + (why?'<p class="offer-why">'+why+'</p>':'')
+        + '<p class="lead">'+o.blurb+'</p>'
+        + '<p class="offer-price">'+o.price+'</p>'
+        + '<a class="btn" href="'+o.url+'" target="_blank" rel="noopener">'+o.cta+'</a>'
         + '</div>';
     }).join("");
+
+    // ---- Sección 3: ¿Qué puedes hacer hoy mismo? (hábitos) ----
+    // 9 o más: no se muestra · 7-8: un hábito · 6 o menos: dos hábitos
+    const habitAreas=sorted.filter(a=>sc[a.key]<9);
+    if(habitAreas.length){
+      $("habitcards").innerHTML=habitAreas.map(a=>{
+        const hs = sc[a.key]<=LOW_MAX ? a.habits : a.habits.slice(0,1);
+        return '<div class="card">'
+          + '<div class="ch"><h3>'+a.name+'</h3><span class="sc">'+sc[a.key]+'/10</span></div>'
+          + '<p class="hlabel">'+(hs.length>1?'Hábitos pequeños para moverla':'Un hábito pequeño para moverla')+'</p>'
+          + '<ul>'+hs.map(h=>'<li>'+h+'</li>').join("")+'</ul>'
+          + '</div>';
+      }).join("");
+    } else {
+      $("habitcards").innerHTML='<p class="allgood">Todas tus áreas están en 9 o más. Vas increíble — mantén los hábitos que ya te funcionan.</p>';
+    }
+
     $("quiz").hidden=true; $("result").hidden=false;
     window.scrollTo(0,0);
   }
@@ -294,14 +371,11 @@
       const canvas=await html2canvas(el,{backgroundColor:"#0D1B1F",scale:2,useCORS:true});
       const img=canvas.toDataURL("image/png");
       const { jsPDF }=window.jspdf;
-      const pdf=new jsPDF("p","pt","a4");
-      const pw=pdf.internal.pageSize.getWidth(), ph=pdf.internal.pageSize.getHeight();
+      const pw=595.28; // ancho A4 en pt
       const ih=canvas.height*(pw/canvas.width);
-      let heightLeft=ih, pos=0;
-      pdf.setFillColor(13,27,31); pdf.rect(0,0,pw,ph,"F");
+      const pdf=new jsPDF({orientation:"p",unit:"pt",format:[pw,ih]}); // una sola página del alto exacto → nada se corta
+      pdf.setFillColor(13,27,31); pdf.rect(0,0,pw,ih,"F");
       pdf.addImage(img,"PNG",0,0,pw,ih,"","FAST");
-      heightLeft-=ph;
-      while(heightLeft>0){ pos-=ph; pdf.addPage(); pdf.setFillColor(13,27,31); pdf.rect(0,0,pw,ph,"F"); pdf.addImage(img,"PNG",0,pos,pw,ih,"","FAST"); heightLeft-=ph; }
       pdf.save(filename);
     }catch(e){ alert("Hubo un problema generando el PDF. Inténtalo de nuevo."); }
     hideEls.forEach(x=>x.style.display="");
@@ -319,5 +393,3 @@
 </script>
 </body>
 </html>
-
-</body></html>
