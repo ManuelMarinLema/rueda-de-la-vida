@@ -72,8 +72,8 @@
   .toparea .ts{font-family:var(--font-display);color:var(--yellow);margin-left:.45rem}
   .toparea .tw{color:var(--muted);margin:.25rem 0 0}
   .offercard{border:1px solid rgba(237,170,86,.4)}
-  .offer-tag{color:var(--yellow);font-style:italic;font-family:var(--font-display);font-size:1.1rem;margin:0 0 .6rem}
-  .offer-why{color:var(--muted);font-size:.92rem;margin:0 0 .7rem}
+  .offer-tag{color:var(--yellow);font-style:italic;font-family:var(--font-display);font-size:clamp(1.7rem,5.5vw,2.4rem);line-height:1.12;margin:0 0 .9rem}
+  .offer-why{color:var(--deep);font-size:.95rem;margin:0 0 .8rem}
   .card strong{color:var(--fg)}
   .offer-price{color:var(--muted);font-size:.9rem;margin:.9rem 0 0}
   .offercard .btn{margin-top:1.2rem}
@@ -82,7 +82,7 @@
   .card .ch{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;margin-bottom:.3rem}
   .card .ch h3{font-size:1.4rem;color:var(--fg)}
   .card .ch .sc{font-family:var(--font-display);color:var(--yellow);font-size:1.3rem;white-space:nowrap}
-  .card .lead{color:var(--muted);margin:.1rem 0 1rem}
+  .card .lead{color:var(--fg);margin:.1rem 0 1rem}
   .card .hlabel{color:var(--deep);font-size:.9rem;margin:0 0 .5rem}
   .card ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.7rem}
   .card li{position:relative;padding-left:1.4rem;color:var(--fg)}
@@ -219,14 +219,13 @@
       ["En paz y con sentido",3],["Bien, con altibajos",2],["Inquieto o vacío seguido",1],["Perdido o apagado",0] ]}
   ];
 
-  const LOW_MAX = 6; // "bajito" = 6 o menos
   const OFFERS = {
     dta:{ name:"Desbloquea tu abundancia", url:"https://www.manuelmarin.co/workshop-dta", price:"17 USD · acceso inmediato a la grabación",
-      blurb:"3 horas para <strong>dejar de perseguir el dinero y empezar a vivir desde la abundancia</strong>. Entiendes por qué se bloquea tu flujo y te llevas herramientas prácticas para atraerla desde otra energía.", cta:"Ver el taller" },
+      blurb:"3 horas para <strong>dejar de perseguir el dinero y empezar a vivir desde la abundancia</strong>. Entiendes por qué se bloquea tu flujo y te llevas herramientas prácticas para atraerla desde otra energía.", cta:"¡Quiero saber más!" },
     reiki:{ name:"Sesión de Reiki", url:"https://www.manuelmarin.co/reiki", price:"Sesión 1 a 1 · presencial o virtual",
-      blurb:"Una terapia uno a uno para <strong>bajar el estrés, recuperar la claridad y reconectar con tu poder interior</strong>. Trabajamos la causa, no solo los síntomas.", cta:"Agendar una sesión" },
-    amar:{ name:"Entrenamiento (A)mar Adentro", url:"https://www.manuelmarin.co/amar-adentro", price:"24 sesiones en vivo · acompañamiento por 6 meses",
-      blurb:"Tu ventaja injusta es <strong>conocerte tanto que el éxito sea inevitable</strong>. 24 sesiones en vivo para <strong>convertir tu autenticidad en tu mayor fortaleza</strong>: claridad sobre tu ventaja única, herramientas para gestionar el miedo sin quemarte y el impulso para dar el primer paso real.", cta:"Agendar mi llamada gratis" }
+      blurb:"Una terapia energética uno a uno para <strong>bajar el estrés, recuperar la claridad y reconectar con tu poder interior</strong>. Trabajamos la causa, no solo los síntomas.", cta:"¡Quiero saber más!" },
+    amar:{ name:"Entrenamiento (A)mar Adentro", url:"https://www.manuelmarin.co/amar-adentro", price:"24 sesiones en vivo · acompañamiento por 3 meses",
+      blurb:"24 sesiones EN VIVO para <strong>transformar tu energía y volverte quien sí puede lograrlo</strong>. Entrénate para <strong>soltar el miedo que no te deja avanzar</strong>, volver a tu esencia y transformarte en tu versión más poderosa.", cta:"¡Quiero saber más!" }
   };
 
   const $ = id => document.getElementById(id);
@@ -294,8 +293,9 @@
     $("fill").style.width="100%";
     const sc=scores();
     renderRadar(sc);
-    const low = k => sc[k] <= LOW_MAX;
-    const lowNames = keys => keys.filter(low).map(k=>areaByKey(k).name).join(", ");
+    const low = k => sc[k] < 6; // bajito = por debajo de 6
+    const natList = a => a.length<=1 ? (a[0]||"") : a.slice(0,-1).join(", ")+" y "+a[a.length-1];
+    const lowShorts = keys => keys.filter(low).map(k=>areaByKey(k).short.toLowerCase());
     const sorted=AREAS.slice().sort((a,b)=>sc[a.key]-sc[b.key]);
     const strong=sorted[sorted.length-1];
 
@@ -313,7 +313,7 @@
     let aspirational=false;
     if(order.length===0){ order=["amar"]; aspirational=true; }
     if(aspirational){ $("offerIntro").textContent="Tu rueda está bastante equilibrada, vas muy bien. Si quieres llevarla a otro nivel, este es el camino:"; }
-    else if(order.length>1){ $("offerIntro").textContent="Lo de arriba lo puedes empezar hoy, por tu cuenta. Si quieres un cambio más profundo y acompañado, este es tu siguiente paso — te lo ordeno de lo más sencillo a lo más profundo."; }
+    else if(order.length>1){ $("offerIntro").textContent="Lo de arriba lo puedes empezar hoy, por tu cuenta. Si quieres un cambio más profundo y acompañado, este es tu siguiente paso:"; }
     else { $("offerIntro").textContent="Lo de arriba lo puedes empezar hoy. Si quieres ir más profundo y acompañado, este es tu siguiente paso:"; }
     $("offers").innerHTML=order.map((k,idx)=>{
       const o=OFFERS[k];
@@ -325,8 +325,8 @@
       let why="";
       if(!aspirational){
         if(k==="dta") why="Porque tu abundancia está pidiendo atención.";
-        else if(k==="reiki") why="Porque hay áreas que te piden bajar el ruido y reconectar: "+lowNames(["relaciones","fisico"])+".";
-        else if(k==="amar") why="Porque varias de tus áreas se transforman desde la raíz — tu energía y tu autenticidad: "+lowNames(["profesion","crecimiento","abundancia","espiritualidad"])+".";
+        else if(k==="reiki"){ const r=lowShorts(["relaciones","fisico"]); why="Porque tu "+natList(r)+(r.length>1?" necesitan":" necesita")+" bajar el ruido y reconectar."; }
+        else if(k==="amar"){ const m=lowShorts(["profesion","crecimiento","abundancia","espiritualidad"]); why="Porque tu "+natList(m)+(m.length>1?" necesitan":" necesita")+" una transformación seria desde la raíz: tu energía y tu autenticidad."; }
       }
       return '<div class="card offercard">'
         + (tag?'<p class="offer-tag">'+tag+'</p>':'')
@@ -339,11 +339,11 @@
     }).join("");
 
     // ---- Sección 3: ¿Qué puedes hacer hoy mismo? (hábitos) ----
-    // 9 o más: no se muestra · 7-8: un hábito · 6 o menos: dos hábitos
+    // por debajo de 6: 2 consejos · 6 a 8: 1 consejo · 9 o más: no se muestra
     const habitAreas=sorted.filter(a=>sc[a.key]<9);
     if(habitAreas.length){
       $("habitcards").innerHTML=habitAreas.map(a=>{
-        const hs = sc[a.key]<=LOW_MAX ? a.habits : a.habits.slice(0,1);
+        const hs = sc[a.key]<6 ? a.habits : a.habits.slice(0,1);
         return '<div class="card">'
           + '<div class="ch"><h3>'+a.name+'</h3><span class="sc">'+sc[a.key]+'/10</span></div>'
           + '<p class="hlabel">'+(hs.length>1?'Hábitos pequeños para moverla':'Un hábito pequeño para moverla')+'</p>'
